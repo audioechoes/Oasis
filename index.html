@@ -14,7 +14,6 @@
       padding: 4rem 2rem;
       display: flex;
       justify-content: center;
-      background: transparent;
     }
     .container {
       max-width: 1600px;
@@ -52,8 +51,6 @@
       transform: translateY(0);
       opacity: 1;
     }
-    
-
     label {
       display: flex;
       align-items: center;
@@ -111,7 +108,7 @@
       height: 100%;
       z-index: 9999;
     }
-      .progress-bar {
+    .progress-bar {
       height: 6px;
       width: 0;
       background: #000;
@@ -126,6 +123,7 @@
     <p>Test your knowledge of Oasis' iconic debut album.</p>
     <button id="startButton">Start Quiz</button>
   </div>
+
   <div id="quizScreen" class="container" style="display:none;">
     <div class="progress-bar" id="progressBar"></div>
     <div id="progressText" style="font-family: 'IBM Plex Mono', monospace; font-size: 1rem; margin-bottom: 1rem; text-align: right;">Question 1 of 10</div>
@@ -136,21 +134,40 @@
       <div id="explanations" class="explanation"></div>
     </div>
   </div>
-  <script>
-    document.getElementById("startButton").addEventListener("click", startQuiz);
 
-    function startQuiz() {
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+  <script>
+    let currentQuestionIndex = 0;
+    const quizForm = document.getElementById("quizForm");
+    const explanations = document.getElementById("explanations");
+
+    const questions = [
+      { q: "Which track from the failed Monnow Valley sessions was the only one to make the final album?", options: ["Columbia", "Slide Away", "Shakermaker", "Bring It On Down"], answer: "Slide Away", explanation: "Only ‘Slide Away’ survived Dave Batchelor’s version, later remixed by Owen Morris." },
+      { q: "What specific mixing technique did Owen Morris use on the drums to give the album its extra groove?", options: ["Gated reverb", "Double tracking", "Eighth-note tape delay", "Phase inversion"], answer: "Eighth-note tape delay", explanation: "Inspired by Phil Spector and Tony Visconti, this gave the drums a relentless, driving feel." },
+      { q: "What did Liam Gallagher claim haunted the Monnow Valley studio during the first recording attempt?", options: ["The ghost of Elvis", "A poltergeist that only he could see", "A phantom dog", "A literal ghost"], answer: "A literal ghost", explanation: "Not a metaphor — he genuinely believed there was a ghost in the studio." },
+      { q: "What household drink was used to fake wine in the album cover shoot?", options: ["Cranberry juice", "Cherryade", "Diluted Ribena", "Vimto"], answer: "Diluted Ribena", explanation: "Red wine photographs as black. Ribena gave it the right visual tone." },
+      { q: "Why did the band ultimately hand over the tapes to Owen Morris with full control?", options: ["Noel quit the sessions", "They had no time left to re-record", "Marcus Russell told him: “Do whatever you want.”", "Creation had run out of money"], answer: "Marcus Russell told him: “Do whatever you want.”", explanation: "It was a desperate last move after two failed sessions and mounting costs." },
+      { q: "What 2024 reissue first officially released the complete Monnow Valley sessions?", options: ["Chasing the Sun edition", "Stop the Clocks bonus disc", "30th Anniversary Edition", "Definitely Maybe: The Lost Tapes"], answer: "30th Anniversary Edition", explanation: "Finally let fans hear the original versions — plus Liam’s version of ‘Sad Song.’" },
+      { q: "How did the iconic recording of “Supersonic” actually begin?", options: ["As a warm-up riff by Noel", "As a jam during a failed take of “I Will Believe”", "As an idea recorded at a soundcheck", "As a rewritten version of “Whatever”"], answer: "As a jam during a failed take of “I Will Believe”", explanation: "They were bored, jamming, and Tony Griffiths insisted they hit record." },
+      { q: "Why was engineer Dave Scott fired during the Monnow Valley sessions?", options: ["He broke a Neve console", "He clashed with Liam over tempos", "He suggested a tempo change on “Slide Away” that worked", "He leaked the demos to the NME"], answer: "He suggested a tempo change on “Slide Away” that worked", explanation: "Batchelor wanted it slower. Scott's faster tempo worked — and got him canned." },
+      { q: "What was unusual about the early demo version of “Columbia”?", options: ["It had reversed vocals", "It featured three spiritual samples, most of which were later cut", "It was performed entirely by Noel", "It was recorded live in one take"], answer: "It featured three spiritual samples, most of which were later cut", explanation: "Only one sample remained; the rest — including a Hare Krishna chant — were axed." },
+      { q: "What was the main reason the final version of Definitely Maybe sounded louder than anything else on the radio or jukeboxes at the time?", options: ["Overdubbed crowd noise", "Varispeeded tape", "Owen Morris’s brickwall compression", "Mastering to vinyl first, then CD"], answer: "Owen Morris’s brickwall compression", explanation: "Deliberate, brutal loudness. Morris mastered it for maximum impact, not nuance." }
+    ];
+
+    document.getElementById("startButton").addEventListener("click", () => {
       document.getElementById("startScreen").style.display = "none";
       document.getElementById("quizScreen").style.display = "block";
       updateProgressBar();
-    }
+    });
 
     function nextQuestion() {
       const current = document.getElementById(`question-${currentQuestionIndex}`);
       const selected = document.querySelector(`input[name='q${currentQuestionIndex}']:checked`);
+      if (!selected) return alert("Please select an answer before continuing.");
 
       const userAnswer = selected.value;
       const correctAnswer = questions[currentQuestionIndex].answer;
+
       if (userAnswer === correctAnswer) {
         current.classList.add("correct-flash");
         const rect = current.getBoundingClientRect();
@@ -164,13 +181,17 @@
         });
         setTimeout(() => current.classList.remove("correct-flash"), 500);
       }
+
       current.classList.remove("active");
       const resultDiv = document.getElementById("result");
       const explanation = questions[currentQuestionIndex].explanation || "";
-      resultDiv.innerHTML = userAnswer === correctAnswer 
-        ? `<p><strong>Correct!</strong></p><p><strong>${explanation}</strong></p>` 
+
+      resultDiv.innerHTML = userAnswer === correctAnswer
+        ? `<p><strong>Correct!</strong></p><p><strong>${explanation}</strong></p>`
         : `<p><strong>Incorrect.</strong> Correct answer: <strong>${correctAnswer}</strong></p><p><strong>${explanation}</strong></p>`;
+
       document.getElementById("nextBtn").style.display = "none";
+
       const contButton = document.createElement("button");
       contButton.className = "continue-btn";
       contButton.textContent = "Continue";
@@ -190,9 +211,11 @@
       document.getElementById("nextBtn").style.display = "inline-block";
       const resultDiv = document.getElementById("result");
       resultDiv.innerHTML = "";
+
       const current = document.getElementById(`question-${currentQuestionIndex}`);
       current.style.display = "none";
       current.style.opacity = 0;
+
       currentQuestionIndex++;
       if (currentQuestionIndex < questions.length) {
         const next = document.getElementById(`question-${currentQuestionIndex}`);
@@ -206,14 +229,17 @@
     function checkAnswers() {
       let score = 0;
       questions.forEach((q, i) => {
-        const userAnswer = document.querySelector(`input[name='q${i}']:checked`).value;
-        if (userAnswer === q.answer) score++;
+        const selected = document.querySelector(`input[name='q${i}']:checked`);
+        if (selected && selected.value === q.answer) score++;
       });
+
       quizForm.style.display = "none";
-      document.querySelector("button[onclick='nextQuestion()']").style.display = "none";
+      document.getElementById("nextBtn").style.display = "none";
+
       const resultDiv = document.getElementById("result");
+      resultDiv.innerHTML = `<h3>You got ${score}/10</h3><p>${score === questions.length ? "You're a Rock 'n' Roll Star!" : "Better luck next time."}</p>`;
+
       if (score === questions.length) {
-        resultDiv.innerHTML = `<h3>You got ${score}/10 – You're a Rock 'n' Roll Star!</h3><p>Full marks. Noel would be proud.</p>`;
         setTimeout(() => {
           confetti({
             particleCount: 500,
@@ -223,37 +249,22 @@
           });
         }, 600);
 
-      const homeBtn = document.createElement("button");
-      homeBtn.textContent = "Visit AudioEchoes.com";
-      homeBtn.onclick = () => window.location.href = "https://www.audioechoes.com";
-      resultDiv.appendChild(homeBtn);
+        const homeBtn = document.createElement("button");
+        homeBtn.textContent = "Visit AudioEchoes.com";
+        homeBtn.onclick = () => window.location.href = "https://www.audioechoes.com";
+        resultDiv.appendChild(homeBtn);
+      }
 
       explanations.innerHTML = "";
     }
-
-    const questions = [
-      { q: "Which track from the failed Monnow Valley sessions was the only one to make the final album?", options: ["Columbia", "Slide Away", "Shakermaker", "Bring It On Down"], answer: "Slide Away", explanation: "Only ‘Slide Away’ survived Dave Batchelor’s version, later remixed by Owen Morris." },
-      { q: "What specific mixing technique did Owen Morris use on the drums to give the album its extra groove?", options: ["Gated reverb", "Double tracking", "Eighth-note tape delay", "Phase inversion"], answer: "Eighth-note tape delay", explanation: "Inspired by Phil Spector and Tony Visconti, this gave the drums a relentless, driving feel." },
-      { q: "What did Liam Gallagher claim haunted the Monnow Valley studio during the first recording attempt?", options: ["The ghost of Elvis", "A poltergeist that only he could see", "A phantom dog", "A literal ghost"], answer: "A literal ghost", explanation: "Not a metaphor — he genuinely believed there was a ghost in the studio." },
-      { q: "What household drink was used to fake wine in the album cover shoot?", options: ["Cranberry juice", "Cherryade", "Diluted Ribena", "Vimto"], answer: "Diluted Ribena", explanation: "Red wine photographs as black. Ribena gave it the right visual tone." },
-      { q: "Why did the band ultimately hand over the tapes to Owen Morris with full control?", options: ["Noel quit the sessions", "They had no time left to re-record", "Marcus Russell told him: “Do whatever you want.”", "Creation had run out of money"], answer: "Marcus Russell told him: “Do whatever you want.”", explanation: "It was a desperate last move after two failed sessions and mounting costs." },
-      { q: "What 2024 reissue first officially released the complete Monnow Valley sessions?", options: ["Chasing the Sun edition", "Stop the Clocks bonus disc", "30th Anniversary Edition", "Definitely Maybe: The Lost Tapes"], answer: "30th Anniversary Edition", explanation: "Finally let fans hear the original versions — plus Liam’s version of ‘Sad Song.’" },
-      { q: "How did the iconic recording of “Supersonic” actually begin?", options: ["As a warm-up riff by Noel", "As a jam during a failed take of “I Will Believe”", "As an idea recorded at a soundcheck", "As a rewritten version of “Whatever”"], answer: "As a jam during a failed take of “I Will Believe”", explanation: "They were bored, jamming, and Tony Griffiths insisted they hit record." },
-      { q: "Why was engineer Dave Scott fired during the Monnow Valley sessions?", options: ["He broke a Neve console", "He clashed with Liam over tempos", "He suggested a tempo change on “Slide Away” that worked", "He leaked the demos to the NME"], answer: "He suggested a tempo change on “Slide Away” that worked", explanation: "Batchelor wanted it slower. Scott's faster tempo worked — and got him canned." },
-      { q: "What was unusual about the early demo version of “Columbia”?", options: ["It had reversed vocals", "It featured three spiritual samples, most of which were later cut", "It was performed entirely by Noel", "It was recorded live in one take"], answer: "It featured three spiritual samples, most of which were later cut", explanation: "Only one sample remained; the rest — including a Hare Krishna chant — were axed." },
-      { q: "What was the main reason the final version of Definitely Maybe sounded louder than anything else on the radio or jukeboxes at the time?", options: ["Overdubbed crowd noise", "Varispeeded tape", "Owen Morris’s brickwall compression", "Mastering to vinyl first, then CD"], answer: "Owen Morris’s brickwall compression", explanation: "Deliberate, brutal loudness. Morris mastered it for maximum impact, not nuance." }
-    ];
-
-    let currentQuestionIndex = 0;
-    const quizForm = document.getElementById("quizForm");
-    const explanations = document.getElementById("explanations");
 
     questions.forEach((item, index) => {
       const div = document.createElement("div");
       div.className = "question";
       if (index === 0) div.classList.add("active");
-      div.setAttribute("id", `question-${index}`);
+      div.id = `question-${index}`;
       div.innerHTML = `<h3>${index + 1}. ${item.q}</h3>`;
+
       item.options.forEach(opt => {
         const label = document.createElement("label");
         const input = document.createElement("input");
@@ -270,9 +281,9 @@
         label.append(` ${opt}`);
         div.appendChild(label);
       });
+
       quizForm.appendChild(div);
     });
   </script>
-  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 </body>
 </html>
