@@ -205,20 +205,30 @@
 
     function checkAnswers() {
       let score = 0;
-      let feedback = "<h3>Review Your Answers</h3><ul>";
       questions.forEach((q, i) => {
         const userAnswer = document.querySelector(`input[name='q${i}']:checked`).value;
-        const resultText = userAnswer === q.answer
-          ? `<strong>Correct</strong>`
-          : `<strong>Incorrect</strong> — You answered: <em>${userAnswer}</em>, correct was: <em>${q.answer}</em>`;
-        feedback += `<li><strong>Q${i + 1}:</strong> ${q.q}<br>${resultText}</li>`;
         if (userAnswer === q.answer) score++;
       });
-      feedback += "</ul>";
       quizForm.style.display = "none";
       document.querySelector("button[onclick='nextQuestion()']").style.display = "none";
-      document.getElementById("result").innerText = `You got ${score} out of ${questions.length} correct.`;
-      explanations.innerHTML = feedback;
+      const resultDiv = document.getElementById("result");
+      if (score === questions.length) {
+        resultDiv.innerHTML = `<h3>You got ${score}/10 – You're a Rock 'n' Roll Star!</h3><p>Full marks. Noel would be proud.</p>`;
+        setTimeout(() => {
+          confetti({
+            particleCount: 500,
+            spread: 160,
+            scalar: 1.4,
+            origin: { y: 0.4 }
+          });
+        }, 600);
+
+      const homeBtn = document.createElement("button");
+      homeBtn.textContent = "Visit AudioEchoes.com";
+      homeBtn.onclick = () => window.location.href = "https://www.audioechoes.com";
+      resultDiv.appendChild(homeBtn);
+
+      explanations.innerHTML = "";
     }
 
     const questions = [
