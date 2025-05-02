@@ -6,98 +6,123 @@
   <title>Definitely Maybe Quiz</title>
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
   <style>
-    html {
-      font-size: 16px;
-    }
-    body {
+    html, body {
       font-family: 'IBM Plex Mono', monospace;
       font-size: 1rem;
-      background: #fff;
+      background: transparent;
       color: #000;
       margin: 0;
-      padding: 4rem 2rem;
+      padding: 0;
       display: flex;
       justify-content: center;
-    }
-    .container {
-      max-width: 800px;
+      align-items: flex-start;
       width: 100%;
+      height: 100%;
+      overflow: hidden;
     }
+
+    .fade-in {
+      animation: fadeIn 0.6s ease-in;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .container {
+      width: 100%;
+      max-width: 1400px;
+      padding: 1rem;
+    }
+
     h1 {
       font-weight: 600;
       text-align: center;
-      font-size: 1.75rem;
-      margin-bottom: 0.5rem;
+      font-size: 1.5rem;
+      margin: 0.5rem 0;
     }
+
     h3 {
       font-weight: 600;
-      font-size: 1.25rem;
-      margin-bottom: 1.25rem;
-      text-align: left;
+      font-size: 1.1rem;
+      margin-bottom: 1rem;
       background: #fff;
-      padding: 1rem;
+      padding: 0.75rem;
       border: 1px dashed #000;
       border-radius: 0.25rem;
     }
+
     .card {
       border: 1px dashed #000;
-      padding: 2rem;
-      margin-bottom: 2rem;
+      padding: 1rem;
+      max-height: 500px;
+      overflow-y: auto;
     }
+
     .question {
       display: none;
       opacity: 0;
       transition: opacity 0.4s ease, transform 0.4s ease;
       transform: translateY(2rem);
     }
+
     .question.active {
       display: block;
       transform: translateY(0);
       opacity: 1;
     }
+
     label {
       display: flex;
       align-items: center;
       gap: 1rem;
-      margin: 1rem 0;
+      margin: 0.75rem 0;
       font-size: 1rem;
-      width: 100%;
-      max-width: 100%;
-      padding: 1rem;
+      padding: 0.75rem;
       border: 1px dashed #000;
       border-radius: 0.5rem;
+      background: #fff;
     }
+
     input[type="radio"] {
-      width: 1.25rem;
-      height: 1.25rem;
+      width: 1.1rem;
+      height: 1.1rem;
       flex-shrink: 0;
     }
+
     button, .continue-btn {
-      margin-top: 1.5rem;
+      margin-top: 1rem;
       padding: 0.5rem 1rem;
       font-size: 1rem;
       border: 1px solid #000;
       background: transparent;
       cursor: pointer;
     }
+
     button:hover {
       background: #000;
       color: #fff;
     }
+
     #startScreen {
       text-align: center;
-      margin-top: 10vh;
+      margin-top: 1rem;
     }
+
     .result, .explanation {
-      margin-top: 2rem;
+      margin-top: 1rem;
     }
+
     .correct-flash {
       animation: flash-green 0.5s ease-in-out;
     }
+
     @keyframes flash-green {
       0% { background-color: #d4fdd4; }
       100% { background-color: transparent; }
     }
+
     canvas.confetti {
       pointer-events: none;
       position: fixed;
@@ -107,18 +132,16 @@
       height: 100%;
       z-index: 9999;
     }
+
     @media (max-width: 600px) {
-      body {
-        padding: 2rem 1rem;
-      }
       .card {
-        padding: 1.5rem;
+        padding: 1rem;
       }
       h1 {
-        font-size: 1.5rem;
+        font-size: 1.3rem;
       }
       h3 {
-        font-size: 1.1rem;
+        font-size: 1rem;
       }
       label {
         flex-direction: column;
@@ -128,18 +151,20 @@
   </style>
 </head>
 <body>
-  <div id="startScreen">
-    <h1>Definitely Maybe Quiz</h1>
-    <p>Test your knowledge of Oasis' iconic debut album.</p>
-    <button id="startButton">Start Quiz</button>
-  </div>
+  <div class="container fade-in">
+    <div id="startScreen">
+      <h1>Definitely Maybe Quiz</h1>
+      <p>Test your knowledge of Oasis' iconic debut album.</p>
+      <button id="startButton">Start Quiz</button>
+    </div>
 
-  <div id="quizScreen" class="container" style="display:none;">
-    <div class="card">
-      <form id="quizForm"></form>
-      <div id="result" class="result"></div>
-      <button type="button" onclick="nextQuestion()" id="nextBtn" disabled>Next</button>
-      <div id="explanations" class="explanation"></div>
+    <div id="quizScreen" style="display:none;">
+      <div class="card">
+        <form id="quizForm"></form>
+        <div id="result" class="result"></div>
+        <button type="button" onclick="nextQuestion()" id="nextBtn" disabled>Next</button>
+        <div id="explanations" class="explanation"></div>
+      </div>
     </div>
   </div>
 
