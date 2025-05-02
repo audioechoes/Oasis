@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Oasis Quiz – Wireframe Jank Mode</title>
+  <title>Oasis Quiz</title>
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
   <style>
     html, body {
@@ -96,7 +96,6 @@
     .result, .explanation {
       margin-top: 1rem;
     }
-
     /* Janky Animations */
     .correct-jank {
       animation: sketchyFlash 0.4s linear;
@@ -223,7 +222,6 @@
         explanation: "They joined for the 'Standing on the Shoulder of Giants' sessions."
       }
     ];
-
     document.getElementById("startButton").addEventListener("click", () => {
       document.getElementById("startScreen").style.display = "none";
       document.getElementById("quizScreen").style.display = "block";
@@ -237,26 +235,28 @@
       const userAnswer = selected.value;
       const correctAnswer = questions[currentQuestionIndex].answer;
 
-      // Add jank class
       const animationClass = userAnswer === correctAnswer ? "correct-jank" : "wrong-shake";
       current.classList.add(animationClass);
-      setTimeout(() => current.classList.remove(animationClass), 500);
 
-      current.classList.remove("active");
-      const resultDiv = document.getElementById("result");
-      const explanation = questions[currentQuestionIndex].explanation || "";
+      setTimeout(() => {
+        current.classList.remove(animationClass);
+        current.classList.remove("active");
 
-      resultDiv.innerHTML = userAnswer === correctAnswer
-        ? `<p><strong>Correct!</strong></p><p>${explanation}</p>`
-        : `<p><strong>Incorrect.</strong> Correct answer: <strong>${correctAnswer}</strong></p><p>${explanation}</p>`;
+        const resultDiv = document.getElementById("result");
+        const explanation = questions[currentQuestionIndex].explanation || "";
 
-      document.getElementById("nextBtn").style.display = "none";
+        resultDiv.innerHTML = userAnswer === correctAnswer
+          ? `<p><strong>Correct!</strong></p><p>${explanation}</p>`
+          : `<p><strong>Incorrect.</strong> Correct answer: <strong>${correctAnswer}</strong></p><p>${explanation}</p>`;
 
-      const contButton = document.createElement("button");
-      contButton.className = "continue-btn";
-      contButton.textContent = "Continue";
-      contButton.onclick = showNext;
-      resultDiv.appendChild(contButton);
+        document.getElementById("nextBtn").style.display = "none";
+
+        const contButton = document.createElement("button");
+        contButton.className = "continue-btn";
+        contButton.textContent = "Continue";
+        contButton.onclick = showNext;
+        resultDiv.appendChild(contButton);
+      }, 500); // allow animation to play
     }
 
     function showNext() {
@@ -289,6 +289,17 @@
 
       const resultDiv = document.getElementById("result");
       resultDiv.innerHTML = `<h3>You got ${score}/10</h3><p>${score === questions.length ? "You're a Rock 'n' Roll Star!" : "Better luck next time."}</p>`;
+
+      const restartBtn = document.createElement("button");
+      restartBtn.textContent = "Restart Quiz";
+      restartBtn.onclick = () => location.reload();
+      resultDiv.appendChild(restartBtn);
+
+      const homeBtn = document.createElement("button");
+      homeBtn.textContent = "Visit AudioEchoes.com";
+      homeBtn.onclick = () => window.location.href = "https://www.audioechoes.com";
+      resultDiv.appendChild(homeBtn);
+
       explanations.innerHTML = "";
     }
 
